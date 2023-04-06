@@ -2,33 +2,36 @@ import { authApi } from "../api/api";
 
 const AUTH_ME = "AUTH_ME";
 const AYTH_PROGRESS = "AYTH_PROGRESS";
-
+const TOKEN = "TOKEN";
 const initialState = {
-  name: "",
+  login: "",
   password: "",
   token: "",
   isProgress: false,
-  isAuth: true,
+  isAuth: localStorage.getItem("isAuth"),
 };
-
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
     case AUTH_ME: {
-      let a = action.password;
+      // debugger;
+      localStorage.setItem("login", action.login);
+      localStorage.setItem("password", action.password);
+      localStorage.setItem("isAuth", true);
+      localStorage.setItem("token", action.token);
       // debugger;
       return {
         ...state,
-        name: action.name,
+        login: action.login,
+        isAuth: true,
         password: action.password,
-        // token: action.token,
+        token: action.token,
       };
     }
+
     case AYTH_PROGRESS: {
       if (state.isProgress == true) {
-        console.log("true");
         return { ...state, isProgress: false };
       } else {
-        console.log("false");
         return { ...state, isProgress: true };
       }
     }
@@ -37,22 +40,32 @@ const authReducer = (state = initialState, action) => {
       return state;
   }
 };
-export const setAuthMe = (name, password) => {
-  return {
-    type: AUTH_ME,
-    name,
-    password,
-    // token,
-  };
-};
+export const setAuthMe = (login, password, token) => ({
+  type: AUTH_ME,
+  login,
+  password,
+  token,
+});
+export const tokenAC = (token) => ({ type: TOKEN, token });
+
 export const setProgress = (boolean) => ({ type: AYTH_PROGRESS, boolean });
-export const authMe = (name, password) => {
-  return (dispatch) => {
+export const authMe =
+  (
+    login = localStorage.getItem("login"),
+    password = localStorage.getItem("password")
+  ) =>
+  (dispatch) => {
     dispatch(setProgress(true));
-    authApi.getUsers(name, password).then((response) => {
-      dispatch(setAuthMe(name, password));
+    authApi.authMeApi(login, password).then((response) => {
+      // debugger;
+      if (response.data.error_code == 0) {
+        // debugger;
+
+        dispatch(setAuthMe(login, password, response.data.data.token));
+
+        // debugger;
+      }
       dispatch(setProgress(true));
     });
   };
-};
 export default authReducer;

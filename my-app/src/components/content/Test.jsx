@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from "react";
-
+import { Navigate, redirect } from "react-router-dom";
+import { contentAPI, gettingDataApi } from "../../api/api";
+import { useQuery, useMutation } from "react-query";
+import axios from "axios";
 const Test = (props) => {
-  console.log("render content");
+  // console.log("render content");
   const [editMode, setEditMode] = useState(false);
   const [dataes, setDataes] = useState(props.content.arrayData);
 
   let editFnTrue = () => {
     setEditMode(true);
   };
+
+  const { data, isSuccess } = useQuery(
+    "getDataAPI",
+    () => gettingDataApi.dataItems(),
+    { keepPreviousData: true }
+  );
   let editFnFalse = () => {
     setEditMode(false);
   };
@@ -45,6 +54,9 @@ const Test = (props) => {
     );
   };
 
+  const mutation = useMutation({
+    mutationFn: () => contentAPI.addDataAPI(),
+  });
   let newTextChange = (e, el) => {
     let currentTargetNew = e.currentTarget.value;
     props.addChangeText(currentTargetNew);
@@ -65,28 +77,35 @@ const Test = (props) => {
   }, [props.content.arrayData]);
   let dateToString = (date) => {
     let dataTostring = new Date(date);
-
     return dataTostring.toString();
   };
+
   return (
     <div className="content__data">
       <div className="buttons">
-        <div className="add-button" onClick={props.postData}>
+        <div
+          className="add-button"
+          onClick={() => {
+            mutation.mutate();
+          }}
+        >
           add data
         </div>
         <div className="add-button" onClick={props.setData}>
           get data
         </div>
       </div>
-      <div>
-        {dataes.map((el) => {
-          return <div> {el.documentName} </div>;
-        })}
-      </div>
+      <div></div>
+      <ul>
+        {!isSuccess ||
+          data.map((el) => {
+            return <li key={el.id}>{el.id}</li>;
+          })}
+      </ul>
       <ul className="items">
         {dataes.map((el) => {
           return (
-            <li className="item">
+            <li className="item" key={el.id}>
               {!editMode && (
                 <div className="item__body">
                   <div className="item__info">
@@ -155,6 +174,7 @@ const Test = (props) => {
                           defaultValue={el.companySigDate}
                           onChange={(as) => {
                             newTextChange(as, el);
+                            debugger;
                           }}
                         />
                       </label>

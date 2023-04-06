@@ -156,20 +156,7 @@ export const updateData = (
 export const getData = () => {
   return (dispatch) => {
     contentAPI.getData().then((response) => {
-      let {
-        companySigDate,
-        companySignatureName,
-        documentName,
-        documentStatus,
-        documentType,
-        employeeNumber,
-        employeeSigDate,
-        employeeSignatureName,
-        id,
-      } = response.data.data[0];
-
       dispatch(addApi(response.data.data));
-      // console.log(response.data.data[0].companySigDate);
     });
   };
 };
@@ -184,7 +171,7 @@ export const postData = () => {
 export const deleteDataApi = (id) => {
   return (dispatch) => {
     contentAPI.removeApi(id).then(() => {
-      console.log("delete");
+      // console.log("delete");
       dispatch(deleteDataItem(id));
     });
   };
@@ -214,7 +201,7 @@ export const updateDataApi = (
         employeeSigDate,
         employeeSignatureName
       )
-      .then(() => {
+      .then((response) => {
         console.log("update");
 
         dispatch(

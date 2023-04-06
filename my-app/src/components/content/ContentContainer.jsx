@@ -10,7 +10,11 @@ import {
 } from "../../redux/content-reducer";
 import Test from "./Test";
 import "./content.css";
-import { contentAPI } from "../../api/api";
+import { compose } from "redux";
+import { withAuthRedirect } from "../../hoc/withAuthRedirect";
+import { Navigate, useLocation } from "react-router-dom";
+import { authMe } from "../../redux/auth-reducer";
+import AuthContainer from "../auth/AuthContainer";
 
 const ContentContainer = (props) => {
   const [state, setState] = useState(null);
@@ -23,18 +27,19 @@ const ContentContainer = (props) => {
     props.getData();
   };
 
-  // let deleteDataItem = (id) => {
-  //   deleteDataItem(id);
-  // };
   useEffect(() => {
     setState(props.content.arrayData);
     setData();
   }, []);
-
+  // debugger;
   // }
+  // if (!props.isAuth)
+  // <Redirect />
+
   return (
     <div>
       <Test
+        isAuth={props.isAuth}
         content={props.content}
         getData={props.getData}
         postData={postData}
@@ -46,11 +51,56 @@ const ContentContainer = (props) => {
     </div>
   );
 };
-const mapStateToProps = (state) => ({ content: state.content });
-export default connect(mapStateToProps, {
-  getData,
-  postData,
-  deleteDataApi,
-  updateDataApi,
-  addChangeText,
-})(ContentContainer);
+// ContentContainer
+const mapStateToProps = (state) => ({
+  content: state.content,
+  authData: state.auth,
+});
+
+// export default compose(
+//   withAuthRedirect,
+//   connect(mapStateToProps, {
+//     getData,
+//     postData,
+//     deleteDataApi,
+//     updateDataApi,
+//     addChangeText,
+//   })
+// )(ContentContainer);
+// let AuthRedirectComponent = (props) => {
+// useEffect(() => {}, [props.authData]);
+// let location = useLocation();
+
+// console.log(`Auth header is: ${props.authData}`);
+// useEffect(() => {
+//   asr();
+// }, [props.authData]);
+// let asr = () => {
+// if (!props.authData.isAuth) {
+// debugger;
+// return <AuthContainer />;
+// return <Redirect />;
+// return <Navigate to={"/login"} />;
+// return <Navigate to={"/login"} />;
+// }
+// debugger;
+// };
+
+// if (!props.authData.isAuth) {
+//   debugger;
+//   return <Navigate to={"/login"} state={{ from: location }} />;
+// }
+// debugger;
+//   return <ContentContainer {...props} />;
+// };
+
+export default compose(
+  connect(mapStateToProps, {
+    getData,
+    postData,
+    deleteDataApi,
+    updateDataApi,
+    addChangeText,
+  }),
+  withAuthRedirect
+)(ContentContainer);

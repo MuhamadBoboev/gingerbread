@@ -3,6 +3,7 @@ import { setAuthMe, authMe } from "../../redux/auth-reducer";
 import Auth from "./Auth";
 
 const AuthContainer = (props) => {
+  // console.log(props.auth.isAuth);
   return (
     <div>
       <Auth

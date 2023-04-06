@@ -12,7 +12,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { authApi } from "../../api/api";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 function Copyright(props) {
   return (
@@ -25,9 +25,8 @@ function Copyright(props) {
       {"Copyright © "}
       <Link color="inherit" href="https://mui.com/">
         Your Website
-      </Link>{" "}
+      </Link>
       {new Date().getFullYear()}
-      {"."}
     </Typography>
   );
 }
@@ -35,23 +34,20 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn(props) {
-  // debugger;
-  // console.log(props.props.isProgress);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const fromPage = location.state?.from?.pathname || "/";
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    let email = data.get("email");
+    let login = data.get("login");
     let password = data.get("password");
-    // props.setAuthMe(email, password);
     console.log({
-      email: data.get("email"),
+      login,
       password,
     });
-    // authApi.getUsers();
-    props.authMe(email, password);
-
-    // props.setAuthMe(email, password);
-    // debugger;
+    props.authMe(login, password);
+    navigate(fromPage);
   };
 
   return (
@@ -82,10 +78,10 @@ export default function SignIn(props) {
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              id="login"
+              label="Логин"
+              name="login"
+              autoComplete="login"
               autoFocus
             />
             <TextField
@@ -93,26 +89,28 @@ export default function SignIn(props) {
               required
               fullWidth
               name="password"
-              label="Password"
+              label="Пароль можете не ввести!"
+              // disabled={true}
               type="password"
               id="password"
               autoComplete="current-password"
             />
-            <FormControlLabel
+            {/* <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
-            />
+            /> */}
             <Button
               type="submit"
               fullWidth
               disabled={props.props.isProgress}
+              // onClick={onSubmitButton}
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
               Sign In
             </Button>
 
-            <Grid container>
+            {/* <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">
                   Forgot password?
@@ -123,7 +121,7 @@ export default function SignIn(props) {
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
-            </Grid>
+            </Grid> */}
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
